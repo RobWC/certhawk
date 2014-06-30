@@ -1,9 +1,8 @@
-package main
+package randip
 
 import (
   "encoding/binary"
   "net"
-  "log"
   "math"
 )
 
@@ -14,6 +13,18 @@ type RandIPv4Mgr struct {
 
 func NewRandIPv4Mgr (seq bool,seed uint32) *RandIPv4Mgr {
   return &RandIPv4Mgr{Seq:seq,ip:seed}
+}
+
+func (r *RandIPv4Mgr) GetPreviousIP() net.IP {
+  ipBytes := make([]byte,4,4)
+  binary.BigEndian.PutUint32(ipBytes,r.ip - 1)
+  return net.IP(ipBytes)
+}
+
+func (r *RandIPv4Mgr) GetCurrentIP() net.IP {
+  ipBytes := make([]byte,4,4)
+  binary.BigEndian.PutUint32(ipBytes,r.ip)
+  return net.IP(ipBytes)
 }
 
 func (r *RandIPv4Mgr) GetNextIP() net.IP {
@@ -37,14 +48,4 @@ func (r *RandIPv4Mgr) GetNextIPStr() string {
   //get current ip
   //increment
   //return
-}
-
-func main () {
-  ipmgr := NewRandIPv4Mgr(true,167772417)
-  for i := 0; i < 1200 ; i ++ {
-    //log.Println(ipmgr.GetNextIPStr())
-    ipmgr.GetNextIPStr()
-  }
-  log.Println(ipmgr.GetNextIPStr())
-  log.Println("Done!")
 }
